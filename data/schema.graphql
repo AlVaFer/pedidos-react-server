@@ -1,0 +1,128 @@
+type Cliente {
+    id: ID
+    nombre: String
+    apellido: String
+    empresa: String
+    emails: [Email]
+    edad: Int
+    tipo: TipoCliente
+}
+type Email {
+    email: String
+}
+type Producto {
+    id: ID
+    nombre: String
+    precio: Int
+    stock: Int
+}
+type Pedido {
+    id: ID
+    pedido: [PedidoProducto],
+    total: Int,
+    fecha: String,
+    cliente: ID,
+    estado: EstadoPedido
+}
+type PedidoProducto {
+    id: ID
+    cantidad: Int
+}
+type ClienteTotal {
+    total: Float,
+    cliente: [Cliente]
+}
+
+
+""" Asigna la categoria del cliente """
+enum TipoCliente {
+    BASICO
+    PREMIUM
+}
+enum EstadoPedido {
+    PENDIENTE
+    COMPLETADO
+    CANCELADO
+}
+
+type Query {
+    getClientes(limite: Int, offset: Int): [Cliente]
+    getCliente(id: ID!) : Cliente
+    totalClientes : String
+
+    # Productos
+    obtenerProductos(limite: Int, offset: Int, stock: Boolean): [Producto]
+    obtenerProducto(id: ID!): Producto
+    totalProductos : String
+
+    # Pedidos
+    obtenerPedidos(cliente: String): [Pedido]
+
+    # Graficas
+    topClientes: [ClienteTotal]
+}
+
+input EmailInput {
+    email: String
+}
+
+""" Campos para los clientes nuevos """
+input ClienteInput {
+    id: ID
+    nombre: String!
+    apellido: String!
+    empresa: String!
+    emails: [EmailInput!]!
+    edad: Int!
+    tipo: TipoCliente!
+}
+
+""" Campos para los Productos nuevos """
+input ProductoInput {
+    id: ID
+    nombre: String!
+    precio: Int!
+    stock: Int!
+}
+
+""" Campos para los Pedidos nuevos """
+input PedidoInput {
+    id: ID
+    pedido: [PedidoProductoInput],
+    total: Int,
+    fecha: String,
+    cliente: ID,
+    estado: EstadoPedido
+}
+
+input PedidoProductoInput {
+    id: ID
+    cantidad: Int
+}
+
+""" Mutation para crear nuevos Clientes """
+type Mutation {
+    #Nombre del Resolver, Input con Datos y Valor que Retorna
+
+    # Clientes
+    """ Te permite Crear Nuevos Clientes """
+    crearCliente(input: ClienteInput) : Cliente
+    """ Te permite Actualizar Clientes """
+    actualizarCliente(input: ClienteInput) : Cliente
+    """ Te permite Eliminar un Cliente """
+    eliminarCliente(id: ID!) : String
+
+    # Productos
+    """ Te permite Crear Productos """
+    nuevoProducto(input: ProductoInput) : Producto
+    """ Te permite Actualizar Productos """
+    actualizarProducto(input: ProductoInput) : Producto
+    """ Te permite Eliminar Productos """
+    eliminarProducto(id: ID!) : String
+
+    # Pedidos
+    """ Nuevo pedido """
+    nuevoPedido(input: PedidoInput) : Pedido
+    """ Ye permite actualizar el estado de un pedido """
+    actualizarEstado(input: PedidoInput) : String
+}
